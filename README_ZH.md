@@ -64,6 +64,43 @@ python mcp_pipe.py
 python -m homepod
 ```
 
+## Docker 运行
+
+这个项目可以运行在 Docker 里，包括 Linux、NAS 或其他非 macOS 环境；但 HomePod 发现和 AirPlay 控制强依赖局域网能力，所以容器最好能直接访问宿主所在网络。
+
+容器默认入口是 `mcp_pipe`，这才是给小智接入时使用的运行方式；不是直接把 `homepod` 当成一个独立 MCP 进程启动。
+
+推荐运行方式：
+
+```bash
+docker run -d \
+  --name xiaozhi-homepod-mcp \
+  --network host \
+  --env-file .env \
+  -v /path/to/music:/music:ro \
+  your-dockerhub-user/xiaozhi-homepod-mcp:latest
+```
+
+Docker 场景下建议这样设置 `.env`：
+
+```bash
+MCP_ENDPOINT=wss://api.xiaozhi.me/mcp/?token=your_token
+HOMEPOD_DEVICES=客厅=192.168.1.100
+MUSIC_LIBRARY=/music
+```
+
+本地构建镜像：
+
+```bash
+docker build -t your-dockerhub-user/xiaozhi-homepod-mcp:latest .
+```
+
+说明：
+- 建议在 `HOMEPOD_DEVICES` 中直接配置固定 IP，不要完全依赖自动扫描。
+- 在 Linux 上强烈建议使用 `--network host`，这样 AirPlay 和设备发现更稳定。
+- 在 macOS 的 Docker 环境里，host network 能力有限，所以更推荐把容器部署在 Linux 机器上。
+- 容器内默认启动命令是 `python -m mcp_pipe`。
+
 ## 可用工具
 
 ### 设备管理

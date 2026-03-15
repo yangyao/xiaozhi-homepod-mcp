@@ -64,6 +64,43 @@ If you want to debug the MCP server locally, you can also run:
 python -m homepod
 ```
 
+## Docker
+
+This project can run in Docker on Linux, NAS, or other non-macOS hosts, but HomePod discovery and AirPlay control work best when the container has direct access to the local network.
+
+The container entrypoint is `mcp_pipe`, which is the mode used by XiaoZhi. It is not meant to start `homepod` directly as a standalone MCP process.
+
+Recommended runtime:
+
+```bash
+docker run -d \
+  --name xiaozhi-homepod-mcp \
+  --network host \
+  --env-file .env \
+  -v /path/to/music:/music:ro \
+  your-dockerhub-user/xiaozhi-homepod-mcp:latest
+```
+
+Recommended `.env` values for Docker:
+
+```bash
+MCP_ENDPOINT=wss://api.xiaozhi.me/mcp/?token=your_token
+HOMEPOD_DEVICES=Living Room=192.168.1.100
+MUSIC_LIBRARY=/music
+```
+
+Build locally:
+
+```bash
+docker build -t your-dockerhub-user/xiaozhi-homepod-mcp:latest .
+```
+
+Notes:
+- Prefer fixed HomePod IPs in `HOMEPOD_DEVICES` instead of relying on automatic discovery.
+- On Linux, `--network host` is strongly recommended for AirPlay and device discovery.
+- On macOS Docker, host networking is more limited, so Linux deployment is the better target for stable streaming.
+- The default startup command inside the container is `python -m mcp_pipe`.
+
 ## Available Tools
 
 ### Device Management
