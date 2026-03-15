@@ -4,6 +4,18 @@ import traceback
 from tool_context import DEVICES, close_atv, get_connection, logger, resolve_device_name
 
 
+async def _wait_for_resume(atv, attempts: int = 4, delay: float = 0.5):
+    """Poll playback state briefly after sending play."""
+    last_playing = None
+    for attempt in range(attempts):
+        if attempt > 0:
+            await asyncio.sleep(delay)
+        last_playing = await atv.metadata.playing()
+        if str(last_playing.device_state) == "DeviceState.Playing":
+            return last_playing
+    return last_playing
+
+
 def register(mcp) -> None:
     @mcp.tool()
     async def play(device: str = None) -> dict:
@@ -41,12 +53,40 @@ def register(mcp) -> None:
 
             logger.debug(f"[play] Remote control interface: {type(atv.remote_control)}")
             await atv.remote_control.play()
-            logger.info(f"[play] Play command sent successfully to '{device_name}'")
+            logger.info(f"[play] Play command sent to '{device_name}', verifying state...")
+
+            playing = await _wait_for_resume(atv)
+            state = str(playing.device_state) if playing and playing.device_state else None
+            if state != "DeviceState.Playing":
+                logger.warning(
+                    f"[play] Device '{device_name}' did not enter playing state after play command; state={state}"
+                )
+                await close_atv(atv)
+                logger.info("[play] Connection closed")
+                return {
+                    "error": "No active content to resume",
+                    "device": device_name,
+                    "action": "play",
+                    "state": state,
+                    "title": playing.title if playing else None,
+                    "artist": playing.artist if playing else None,
+                    "album": playing.album if playing else None,
+                }
+
+            logger.info(f"[play] Playback resumed successfully on '{device_name}'")
 
             await close_atv(atv)
             logger.info("[play] Connection closed")
 
-            return {"success": True, "device": device_name, "action": "play"}
+            return {
+                "success": True,
+                "device": device_name,
+                "action": "play",
+                "state": state,
+                "title": playing.title,
+                "artist": playing.artist,
+                "album": playing.album,
+            }
         except Exception as exc:
             logger.error(f"[play] ERROR: {exc}")
             logger.error(traceback.format_exc())

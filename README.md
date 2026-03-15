@@ -1,163 +1,165 @@
 # MCP HomePod Controller
 
-通过 MCP (Model Context Protocol) 控制 HomePod，支持浏览本地音乐库、把本地音频推流到 HomePod 播放，以及执行基础播放控制。
+[中文说明](README_ZH.md)
 
-## 功能
+Control HomePod through MCP (Model Context Protocol). This project supports browsing a local music library, streaming local audio files to HomePod, and basic playback control.
 
-### 播放控制
-- 🔊 播放/暂停/停止
-- 🔈 音量控制
-- 🎵 获取当前播放信息
-- ⏭️ 上一曲/下一曲
+## Features
 
-### 本地音乐
-- 📂 浏览音乐库
-- 🔍 搜索音乐
-- 🎶 推送本地音乐到 HomePod
-- 💿 播放专辑
+### Playback Control
+- Play / pause / stop
+- Volume control
+- Read current playback info
+- Previous / next track
 
-### 设备管理
-- 📡 扫描局域网 AirPlay 设备
-- 📋 列出配置的设备
+### Local Music
+- Browse local music library
+- Search music files
+- Stream local audio to HomePod
+- Play an album
 
-## 快速开始
+### Device Management
+- Scan AirPlay devices on the local network
+- List configured devices
 
-### 1. 安装依赖
+## Quick Start
+
+### 1. Install Dependencies
 
 ```bash
 cd /Users/jiao/www/play/mcp-homepod
 pip install -r requirements.txt
 ```
 
-### 2. 配置环境变量
+### 2. Configure Environment Variables
 
-编辑 `.env` 文件：
+Edit `.env`:
 
 ```bash
-# MCP 接入点地址
+# MCP endpoint
 MCP_ENDPOINT=wss://api.xiaozhi.me/mcp/?token=your_token
 
-# HomePod 设备 (名称=IP地址)
-HOMEPOD_DEVICES=客厅=192.168.1.100
+# HomePod devices (name=ip)
+HOMEPOD_DEVICES=Living Room=192.168.1.100
 
-# 本地音乐库路径
+# Local music library path
 MUSIC_LIBRARY=/Users/jiao/Music
 ```
 
-### 3. 首次配对（如需要）
+### 3. Pair the Device First if Needed
 
 ```bash
 python pair.py
 ```
 
-### 4. 启动服务
+### 4. Start the Service
 
 ```bash
 python mcp_pipe.py
 ```
 
-如果你是直接本地调试 MCP server，也可以运行：
+If you want to debug the MCP server locally, you can also run:
 
 ```bash
 python -m homepod
 ```
 
-## 可用工具
+## Available Tools
 
-### 设备管理
-| 工具 | 说明 |
-|------|------|
-| `list_devices` | 列出配置的设备 |
-| `scan_devices` | 扫描局域网设备 |
+### Device Management
+| Tool | Description |
+|------|-------------|
+| `list_devices` | List configured devices |
+| `scan_devices` | Scan devices on the local network |
 
-### 播放控制
-| 工具 | 说明 | 参数 |
-|------|------|------|
-| `play` | 恢复当前可恢复的播放上下文 | device (可选) |
-| `pause` | 暂停 | device (可选) |
-| `stop` | 停止 | device (可选) |
-| `set_volume` | 设置音量 | device, level |
-| `get_volume` | 获取音量 | device (可选) |
-| `now_playing` | 当前播放 | device (可选) |
-| `next_track` | 下一曲 | device (可选) |
-| `previous_track` | 上一曲 | device (可选) |
+### Playback Control
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| `play` | Resume the current resumable playback context | `device` (optional) |
+| `pause` | Pause playback | `device` (optional) |
+| `stop` | Stop playback | `device` (optional) |
+| `set_volume` | Set volume | `device`, `level` |
+| `get_volume` | Get volume | `device` (optional) |
+| `now_playing` | Get current playback info | `device` (optional) |
+| `next_track` | Skip to the next track | `device` (optional) |
+| `previous_track` | Return to the previous track | `device` (optional) |
 
-### 本地音乐
-| 工具 | 说明 | 参数 |
-|------|------|------|
-| `list_music` | 列出音乐文件 | path, recursive |
-| `search_music` | 搜索音乐 | keyword |
-| `stream_file` | 推送音乐播放 | file_path, device |
-| `play_album` | 播放专辑 | album_path, device |
+### Local Music
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| `list_music` | List music files | `path`, `recursive` |
+| `search_music` | Search music files | `keyword` |
+| `stream_file` | Stream a local audio file | `file_path`, `device` |
+| `play_album` | Play an album directory | `album_path`, `device` |
 
-## 使用示例
+## Usage Examples
 
+```text
+# Browse music
+list_music(path="Pop", recursive=true)
+
+# Search music
+search_music(keyword="Coldplay")
+
+# Play a file
+stream_file(file_path="Pop/Coldplay/Viva La Vida.mp3", device="Living Room")
+
+# Play an album
+play_album(album_path="Pop/Coldplay/Viva La Vida or Death and All His Friends", device="Living Room")
+
+# Set volume to 50%
+set_volume(device="Living Room", level=0.5)
 ```
-# 浏览音乐库
-list_music(path="流行音乐", recursive=true)
 
-# 搜索音乐
-search_music(keyword="周杰伦")
+`set_volume` accepts both styles:
+- `0.5` is treated as `50%`
+- `50` is also treated as `50%`
 
-# 播放指定文件
-stream_file(file_path="流行音乐/周杰伦/青花瓷.mp3", device="客厅")
+## Behavior Notes
 
-# 播放专辑
-play_album(album_path="流行音乐/周杰伦/范特西", device="客厅")
+### Difference Between `play` and `stream_file`
 
-# 设置音量 50%
-set_volume(device="客厅", level=0.5)
-```
+- `play` resumes an existing playback context on HomePod
+- `stream_file` explicitly starts playing a local audio file
 
-`set_volume` 兼容两种写法：
-- `0.5` 会被当作 `50%`
-- `50` 也会被当作 `50%`
+If the device does not currently have resumable content, `play` may not actually start playback. In that case, `stream_file` is the correct tool to use.
 
-## 行为说明
+### Pause and Stop for Local Streaming
 
-### `play` 和 `stream_file` 的区别
+For local audio sessions started by `stream_file` or `play_album`, `pause` and `stop` will first try to control the active streaming session. This avoids cases where the command is accepted but the local stream keeps playing.
 
-- `play` 用于恢复 HomePod 当前已有的播放上下文
-- `stream_file` 用于明确播放一首本地音乐文件
+## Supported Audio Formats
 
-如果设备当前没有可恢复的播放内容，`play` 可能不会真正开始播放；这种场景下应优先使用 `stream_file`。
-
-### 本地推流的暂停/停止
-
-对通过 `stream_file` 或 `play_album` 发起的本地音频推流，`pause` 和 `stop` 会优先控制当前活跃的推流会话。这样可以避免“命令发送成功，但没有停掉本地推流”的问题。
-
-## 支持的音频格式
-
-- MP3 (.mp3)
-- AAC/M4A (.m4a, .aac)
-- FLAC (.flac)
-- WAV (.wav)
-- OGG (.ogg)
-- WMA (.wma)
+- MP3 (`.mp3`)
+- AAC / M4A (`.m4a`, `.aac`)
+- FLAC (`.flac`)
+- WAV (`.wav`)
+- OGG (`.ogg`)
+- WMA (`.wma`)
 - ALAC
 
-## 注意事项
+## Notes
 
-1. HomePod 需要开启 AirPlay 功能
-2. 本地音乐推流需要 AirPlay 可用；部分设备/系统版本下可能需要先完成配对
-3. 电脑和 HomePod 需在同一局域网
-4. `play` / `pause` / `stop` 对系统原生播放器和本地推流的行为不完全相同，排查问题时请先确认当前播放来源
+1. AirPlay must be enabled on the HomePod.
+2. Local music streaming requires AirPlay to be available. On some device or system versions, pairing may be required first.
+3. The computer and HomePod must be on the same local network.
+4. `play`, `pause`, and `stop` do not behave exactly the same for native system playback and locally streamed audio. Check the current playback source when debugging.
 
-## 项目结构
+## Project Structure
 
-``` 
+```text
 mcp-homepod/
-├── homepod.py       # MCP 入口
-├── tool_context.py  # 共享配置、日志、连接逻辑
-├── tools/           # 每个 MCP tool 一个文件
+├── homepod.py       # MCP entry point
+├── tool_context.py  # Shared config, logging, and connection helpers
+├── tools/           # One file per MCP tool
 │   ├── play.py
 │   ├── pause.py
 │   ├── stop.py
 │   ├── stream_file.py
 │   └── ...
-├── pair.py          # 配对工具
-├── mcp_pipe.py      # WebSocket 管道
-├── mcp_config.json  # MCP 配置
-├── .env             # 环境变量
-└── requirements.txt # 依赖列表
+├── pair.py          # Pairing helper
+├── mcp_pipe.py      # WebSocket bridge
+├── mcp_config.json  # MCP config
+├── .env             # Environment variables
+└── requirements.txt # Dependencies
 ```
