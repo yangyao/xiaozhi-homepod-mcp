@@ -86,7 +86,7 @@ docker run -d \
   --network host \
   --env-file .env \
   -v /path/to/music:/music:ro \
-  your-dockerhub-user/xiaozhi-homepod-mcp:latest
+  yangyao/xiaozhi-homepod-mcp:latest
 ```
 
 Recommended `.env` values for Docker:
@@ -100,7 +100,7 @@ MUSIC_LIBRARY=/music
 Build locally:
 
 ```bash
-docker build -t your-dockerhub-user/xiaozhi-homepod-mcp:latest .
+docker build -t yangyao/xiaozhi-homepod-mcp:latest .
 ```
 
 Notes:
