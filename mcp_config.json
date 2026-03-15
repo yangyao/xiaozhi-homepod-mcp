@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "homepod": {
+      "type": "stdio",
+      "command": "/Users/jiao/www/play/mcp-homepod/venv/bin/python",
+      "args": ["-m", "homepod"]
+    }
+  }
+}
