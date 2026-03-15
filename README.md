@@ -24,14 +24,22 @@ Control HomePod through MCP (Model Context Protocol). This project supports brow
 
 ## Quick Start
 
-### 1. Install Dependencies
+### 1. Fork or Clone the Repository
 
 ```bash
-cd /Users/jiao/www/play/mcp-homepod
+git clone https://github.com/yangyao/xiaozhi-homepod-mcp.git
+cd xiaozhi-homepod-mcp
+```
+
+If you plan to customize this project, fork it first and then clone your own repository.
+
+### 2. Install Dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Configure Environment Variables
+### 3. Configure Environment Variables
 
 Edit `.env`:
 
@@ -46,13 +54,13 @@ HOMEPOD_DEVICES=Living Room=192.168.1.100
 MUSIC_LIBRARY=/Users/jiao/Music
 ```
 
-### 3. Pair the Device First if Needed
+### 4. Pair the Device First if Needed
 
 ```bash
 python pair.py
 ```
 
-### 4. Start the Service
+### 5. Start the Service
 
 ```bash
 python mcp_pipe.py

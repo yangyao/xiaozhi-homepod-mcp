@@ -24,14 +24,22 @@
 
 ## 快速开始
 
-### 1. 安装依赖
+### 1. Fork 或下载代码
 
 ```bash
-cd /Users/jiao/www/play/mcp-homepod
+git clone https://github.com/yangyao/xiaozhi-homepod-mcp.git
+cd xiaozhi-homepod-mcp
+```
+
+如果你打算长期修改这个项目，建议先 fork 再 clone 你自己的仓库。
+
+### 2. 安装依赖
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. 配置环境变量
+### 3. 配置环境变量
 
 编辑 `.env` 文件：
 
@@ -46,13 +54,13 @@ HOMEPOD_DEVICES=客厅=192.168.1.100
 MUSIC_LIBRARY=/Users/jiao/Music
 ```
 
-### 3. 首次配对（如需要）
+### 4. 首次配对（如需要）
 
 ```bash
 python pair.py
 ```
 
-### 4. 启动服务
+### 5. 启动服务
 
 ```bash
 python mcp_pipe.py
