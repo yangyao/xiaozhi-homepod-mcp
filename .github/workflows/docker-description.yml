@@ -1,0 +1,32 @@
+name: Sync Docker Hub Description
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - README.md
+      - .github/workflows/docker-description.yml
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: xiaozhi-homepod-mcp
+
+jobs:
+  sync-description:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+          short-description: MCP server for XiaoZhi/ESP32 to control HomePod playback, browse local music, and stream audio over AirPlay.
+          readme-filepath: ./README.md
